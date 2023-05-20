@@ -1,8 +1,14 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:soft_ride_driver/intro/splash_screen.dart';
 
+import 'firebase_options.dart';
+
 Future<void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp( options: DefaultFirebaseOptions.currentPlatform);
+
   runApp(MyApp(
     child: MaterialApp(
       title: 'Soft Drive - Driver',
@@ -10,10 +16,15 @@ Future<void> main() async{
         primarySwatch: Colors.blue,
       ),
       home: const MySplashScreen(),
-    ),
-  ),
+    )),
   );
+
 }
+
+
+
+
+
 
 class MyApp extends StatefulWidget {
   final Widget child;
