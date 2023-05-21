@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:soft_ride_driver/authentication/car_info_screen.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:soft_ride_driver/authentication/sign_in_screen.dart';
 import 'package:soft_ride_driver/constants/image_bank.dart';
+import 'package:soft_ride_driver/widgets/progress_dialog.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -16,6 +17,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
+
+  // SignUp Form Validator
+    validateRegistrationForm() {
+      if(nameController.text.length < 3) {
+        Fluttertoast.showToast(msg: "Name must be atleast 3 Characters.");
+      }else if(!emailController.text.contains("@")) {
+        Fluttertoast.showToast(msg: "Email address is not Valid.");
+      }else if(phoneController.text.isEmpty) {
+        Fluttertoast.showToast(msg: "Phone Number is required.");
+      }else if(passwordController.text.length < 6) {
+        Fluttertoast.showToast(msg: "Password must be atleast 6 Characters.");
+      }else {
+        // saveDriverInfoNow();
+        // print("Registration has started . . .");
+        showProgressDialog(message: 'About to Register You now', context: context);
+      }
+    }
 
   @override
   void dispose() {
@@ -157,8 +176,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
               // Create Account Button
               ElevatedButton(
                 onPressed: () {
-                  // validateForm();
-                  Navigator.push(context, MaterialPageRoute(builder: (c)=> CarInfoScreen()));
+                  validateRegistrationForm();
+                  // Navigator.push(context, MaterialPageRoute(builder: (c)=> CarInfoScreen()));
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.lightGreenAccent,
@@ -178,7 +197,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   style: TextStyle(color: Colors.grey),
                 ),
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (c)=> const SignInScreen()));
+                  Navigator.push(context, MaterialPageRoute(builder: (c)=> const SignInScreen()));                  
                 },
               ),
             ],
