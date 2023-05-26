@@ -54,6 +54,7 @@ class DefaultFirebaseOptions {
     appId: '1:1005188439450:android:3fe13f14ee09fed0d6ae23',
     messagingSenderId: '1005188439450',
     projectId: 'soft-ride-driver',
+    databaseURL: 'https://soft-ride-driver-default-rtdb.firebaseio.com',
     storageBucket: 'soft-ride-driver.appspot.com',
   );
 
@@ -62,6 +63,7 @@ class DefaultFirebaseOptions {
     appId: '1:1005188439450:ios:e7e263021e2157ddd6ae23',
     messagingSenderId: '1005188439450',
     projectId: 'soft-ride-driver',
+    databaseURL: 'https://soft-ride-driver-default-rtdb.firebaseio.com',
     storageBucket: 'soft-ride-driver.appspot.com',
     iosClientId: '1005188439450-fe93akvrbvboenkl6ld3k00hj17nnqea.apps.googleusercontent.com',
     iosBundleId: 'com.example.softRideDriver',
