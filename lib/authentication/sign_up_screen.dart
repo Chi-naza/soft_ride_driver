@@ -1,5 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:soft_ride_driver/Firebase_Service/global.dart';
+import 'package:soft_ride_driver/authentication/car_info_screen.dart';
 import 'package:soft_ride_driver/authentication/sign_in_screen.dart';
 import 'package:soft_ride_driver/constants/image_bank.dart';
 import 'package:soft_ride_driver/widgets/progress_dialog.dart';
@@ -30,11 +34,56 @@ class _SignUpScreenState extends State<SignUpScreen> {
       }else if(passwordController.text.length < 6) {
         Fluttertoast.showToast(msg: "Password must be atleast 6 Characters.");
       }else {
-        // saveDriverInfoNow();
-        // print("Registration has started . . .");
-        showProgressDialog(message: 'About to Register You now', context: context);
+        // calling the Registration function
+        signUpAndSaveDriverInfoNow();
+        
       }
     }
+
+
+
+    // A SignUp Function
+    Future<void> signUpAndSaveDriverInfoNow() async {
+
+      // Calling the progress indicator
+      showProgressDialog(message: "Processing, Please wait...", context: context);
+
+      final User? firebaseUser = (
+        await fAuth.createUserWithEmailAndPassword(
+          email: emailController.text.trim(),
+          password: passwordController.text.trim(),
+        ).catchError((msg){
+          Navigator.pop(context);
+          Fluttertoast.showToast(msg: "Error: $msg");
+        })
+      ).user;
+
+      if(firebaseUser != null) {
+        Map driverMap =
+        {
+          "id": firebaseUser.uid,
+          "name": nameController.text.trim(),
+          "email": emailController.text.trim(),
+          "phone": phoneController.text.trim(),
+        };
+
+        DatabaseReference driversRef = FirebaseDatabase.instance.ref().child("drivers");
+        driversRef.child(firebaseUser.uid).set(driverMap);
+
+        currentFirebaseUser = firebaseUser;
+        Fluttertoast.showToast(msg: "Account has been Created.");
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (c)=> CarInfoScreen()));
+      }
+      else
+      {
+        Navigator.pop(context);
+        Fluttertoast.showToast(msg: "Account has not been Created.");
+      }
+  }
+
+
+
+
 
   @override
   void dispose() {
@@ -177,7 +226,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ElevatedButton(
                 onPressed: () {
                   validateRegistrationForm();
-                  // Navigator.push(context, MaterialPageRoute(builder: (c)=> CarInfoScreen()));
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.lightGreenAccent,

@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:soft_ride_driver/Firebase_Service/global.dart';
+import 'package:soft_ride_driver/authentication/sign_in_screen.dart';
 import 'package:soft_ride_driver/authentication/sign_up_screen.dart';
 import 'package:soft_ride_driver/constants/image_bank.dart';
 import 'package:soft_ride_driver/main_screens/main_screen.dart';
@@ -16,8 +18,13 @@ class _MySplashScreenState extends State<MySplashScreen> {
 
   // splash screen implementation
   void startTimer(){
-    Timer(const Duration(seconds: 5), () { 
-      Navigator.push(context, MaterialPageRoute(builder: (c) => const SignUpScreen()));
+    Timer(const Duration(seconds: 5), () async{ 
+      if(await fAuth.currentUser != null) {
+        currentFirebaseUser = fAuth.currentUser;
+        Navigator.push(context, MaterialPageRoute(builder: (c)=> MainScreen()));
+      }else {
+        Navigator.push(context, MaterialPageRoute(builder: (c)=> SignInScreen()));
+      }
     });
   }
 

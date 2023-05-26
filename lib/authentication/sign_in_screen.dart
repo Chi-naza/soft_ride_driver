@@ -1,6 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:soft_ride_driver/Firebase_Service/global.dart';
 import 'package:soft_ride_driver/authentication/sign_up_screen.dart';
 import 'package:soft_ride_driver/constants/image_bank.dart';
+import 'package:soft_ride_driver/intro/splash_screen.dart';
+import 'package:soft_ride_driver/main_screens/main_screen.dart';
+import 'package:soft_ride_driver/widgets/progress_dialog.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -14,6 +20,40 @@ class _SignInScreenState extends State<SignInScreen> {
   // input controllers
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
+  validateForm()
+  {
+    if(!emailController.text.contains("@")) {
+      Fluttertoast.showToast(msg: "Email address is not Valid.");
+    }else if(passwordController.text.isEmpty) {
+      Fluttertoast.showToast(msg: "Password is required.");
+    }else {
+      loginDriverNow();
+    }
+  }
+
+  Future<void> loginDriverNow() async {
+    showProgressDialog(context: context, message: "Processing, Please wait...");
+    final User? firebaseUser = (
+        await fAuth.signInWithEmailAndPassword(
+          email: emailController.text.trim(),
+          password: passwordController.text.trim(),
+        ).catchError((msg){
+          Navigator.pop(context);
+          Fluttertoast.showToast(msg: "Error: " + msg.toString());
+        })
+    ).user;
+
+    if(firebaseUser != null) {
+      currentFirebaseUser = firebaseUser;
+      Fluttertoast.showToast(msg: "Login Successful.");
+      Navigator.push(context, MaterialPageRoute(builder: (c)=> const MySplashScreen()));
+    }else {
+      Navigator.pop(context);
+      Fluttertoast.showToast(msg: "Error Occurred during Login.");
+    }
+  }
+
 
 @override
   void dispose() {
@@ -101,8 +141,9 @@ class _SignInScreenState extends State<SignInScreen> {
               // Login Button
               ElevatedButton(
                 onPressed: () {
-                  // validateForm();
-                  print('I am logging in . . .');
+                  // calling the validate login form function, 
+                  // which will eventually call the login function
+                  validateForm();
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.lightGreenAccent,

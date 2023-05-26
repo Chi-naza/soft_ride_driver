@@ -1,5 +1,9 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:soft_ride_driver/Firebase_Service/global.dart';
 import 'package:soft_ride_driver/constants/image_bank.dart';
+import 'package:soft_ride_driver/intro/splash_screen.dart';
 
 class CarInfoScreen extends StatefulWidget {
   const CarInfoScreen({super.key});
@@ -15,6 +19,26 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
 
   List<String> carTypesList = ["uber-x", "uber-go", "bike"];
   String? selectedCarType;
+
+
+  // A method to save car details or Vehicle Info
+  void saveCarInfo() {
+    Map driverCarInfoMap =
+    {
+      "car_color": carColorController.text.trim(),
+      "car_number": carNumberController.text.trim(),
+      "car_model": carModelController.text.trim(),
+      "type": selectedCarType,
+    };
+
+    DatabaseReference driversRef = FirebaseDatabase.instance.ref().child("drivers");
+    driversRef.child(currentFirebaseUser!.uid).child("car_details").set(driverCarInfoMap);
+
+    Fluttertoast.showToast(msg: "Car Details has been saved, Congratulations.");
+    Navigator.push(context, MaterialPageRoute(builder: (c)=> const MySplashScreen()));
+  }
+
+
 
   @override
   void dispose() {
@@ -154,7 +178,10 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
               ElevatedButton(
                 onPressed: (){
                   if(carColorController.text.isNotEmpty && carNumberController.text.isNotEmpty && carModelController.text.isNotEmpty && selectedCarType != null) {
-                    // saveCarInfo();
+                    // Calling the save car details method
+                    saveCarInfo();
+                  }else{
+                    Fluttertoast.showToast(msg: "Vehicle details incomplete. Provide the required information!");
                   }
                 },
                 style: ElevatedButton.styleFrom(
